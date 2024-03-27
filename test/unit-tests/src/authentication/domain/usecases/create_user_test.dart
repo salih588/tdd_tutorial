@@ -15,7 +15,7 @@ void main() {
     useCase = CreateUser(repository);
   });
 
-  final params = 
+  final params = CreateUserParams.empty();
 
   test('should call the [AuthRepo.createUser]', () async {
     when(
@@ -25,7 +25,16 @@ void main() {
         avatar: any(named: 'avatar'),
       ),
     ).thenAnswer((_) async => const Right(null));
-  });
 
-  useCase();
+    final result = await useCase(params);
+
+    expect(result, equals(const Right<dynamic, void>(null)));
+    verify(() => repository.createUser(
+          createdAt: params.createdAt,
+          name: params.name,
+          avatar: params.avatar,
+        )).called(1);
+    
+    verifyNoMoreInteractions(repository);
+  });
 }
