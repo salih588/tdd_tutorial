@@ -7,14 +7,14 @@ class User extends Equatable {
       required this.name,
       required this.avatar});
 
-  final int id;
+  final String id;
   final String createdAt;
   final String name;
   final String avatar;
 
   const User.empty()
       : this(
-          id: 1,
+          id: '1',
           createdAt: '_empty.createdAt',
           name: '_empty.name',
           avatar: '_empty.avatar',
