@@ -26,5 +26,34 @@ void main() {
       expect(result, equals(tModel));
     });
   });
+
+  group('fromJson', () {
+    test('should return a [UserModel] with right data', () {
+
+      final result = UserModel.fromJson(tJson);
+      expect(result, equals(tModel));
+    });
+  });
+  
+  group('toMap', () {
+    test('should return a [Map] with the right data', () {
+      final result = tModel.toMap();
+      expect(result, tMap);
+    });
+  });
+
+  group('toJson', () {
+    test('should return a [JSON] string with the right data', () {
+      final result = tModel.toJson();
+      expect(result, tJson);
+    });
+  });
+  
+  group('copyWith', () {
+    test('should return a [UserModel] with different data', () {
+      final result = tModel.copyWith(name: 'Paul');
+      expect(result.name, equals('Paul'));
+    });
+  });
   
 }
