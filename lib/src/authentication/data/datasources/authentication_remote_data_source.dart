@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:tdd_tutorial/core/errors/exceptions.dart';
 import 'package:tdd_tutorial/core/utils/constants.dart';
+import 'package:tdd_tutorial/core/utils/typedef.dart';
 import 'package:tdd_tutorial/src/authentication/data/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,8 +16,8 @@ abstract class AuthenticationRemoteDataSource {
   Future<List<UserModel>> getUsers();
 }
 
-const kCreateUserEndpoint = '/users';
-const kGetUsersEndpoint = '/users';
+const kCreateUserEndpoint = '/test-api/users';
+const kGetUsersEndpoint = '/test-api/users';
 
 class AuthRemoteDataSrcImpl implements AuthenticationRemoteDataSource {
   final http.Client _client;
@@ -29,7 +30,7 @@ class AuthRemoteDataSrcImpl implements AuthenticationRemoteDataSource {
     required String avatar}) async {
     try {
       final response = await _client.post(
-        Uri.parse('$kBaseUrl$kCreateUserEndpoint'),
+        Uri.https(kBaseUrl,kCreateUserEndpoint),
         body: jsonEncode({
           'createdAt': createdAt,
           'name': name,
@@ -43,16 +44,20 @@ class AuthRemoteDataSrcImpl implements AuthenticationRemoteDataSource {
           statusCode: response.statusCode,
         );
       }
-    }on APIException{
+    } on APIException {
       rethrow;
-    } catch(e){
+    } catch (e) {
       throw APIException(message: e.toString(), statusCode: 505);
     }
   }
 
   @override
-  Future<List<UserModel>> getUsers() {
-    // TODO: implement getUsers
-    throw UnimplementedError();
+  Future<List<UserModel>> getUsers() async {
+    final response = await _client.get(
+        Uri.https(kBaseUrl, kGetUsersEndpoint)
+    );
+
+    return List<DataMap>.from(jsonDecode(response.body) as List).map((
+        userData) => UserModel.fromMap(userData)).toList();
   }
 }

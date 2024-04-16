@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:tdd_tutorial/core/errors/exceptions.dart';
 import 'package:tdd_tutorial/core/utils/constants.dart';
 import 'package:tdd_tutorial/src/authentication/data/datasources/authentication_remote_data_source.dart';
+import 'package:tdd_tutorial/src/authentication/data/models/user_model.dart';
 
 class MockClient extends Mock implements http.Client {}
 
@@ -30,7 +31,7 @@ void main() {
       expect(methodCall(createdAt: 'createdAt', name: 'name', avatar: 'avatar'),
           completes);
 
-      verify(() => client.post(Uri.parse('$kBaseUrl$kCreateUserEndpoint'),
+      verify(() => client.post(Uri.https(kBaseUrl, kCreateUserEndpoint),
           body: jsonEncode({
             'createdAt': 'createdAt',
             'name': 'name',
@@ -60,12 +61,29 @@ void main() {
         ),
       );
 
-      verify(() => client.post(Uri.parse('$kBaseUrl$kCreateUserEndpoint'),
+      verify(() => client.post(Uri.https(kBaseUrl,kCreateUserEndpoint),
           body: jsonEncode({
             'createdAt': 'createdAt',
             'name': 'name',
             'avatar': 'avatar',
           }))).called(1);
+
+      verifyNoMoreInteractions(client);
+    });
+  });
+
+  group('getUsers', () {
+    const tUsers = [UserModel.empty()];
+    test('should return [List<User>] when the status code is 200', () async {
+      when(() => client.get(any())).thenAnswer(
+        (_) async => http.Response(jsonEncode([tUsers.first.toMap()]), 200),
+      );
+
+      final result = await remoteDataSource.getUsers();
+
+      expect(result, equals(tUsers));
+
+      verify(() => client.get(Uri.https(kBaseUrl, kGetUsersEndpoint))).called(1);
 
       verifyNoMoreInteractions(client);
     });
