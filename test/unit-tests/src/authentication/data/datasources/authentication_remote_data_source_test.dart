@@ -61,7 +61,7 @@ void main() {
         ),
       );
 
-      verify(() => client.post(Uri.https(kBaseUrl,kCreateUserEndpoint),
+      verify(() => client.post(Uri.https(kBaseUrl, kCreateUserEndpoint),
           body: jsonEncode({
             'createdAt': 'createdAt',
             'name': 'name',
@@ -83,7 +83,31 @@ void main() {
 
       expect(result, equals(tUsers));
 
-      verify(() => client.get(Uri.https(kBaseUrl, kGetUsersEndpoint))).called(1);
+      verify(() => client.get(Uri.https(kBaseUrl, kGetUsersEndpoint)))
+          .called(1);
+
+      verifyNoMoreInteractions(client);
+    });
+
+    test('shuld throw [APIException] when the status code is not 200',
+        () async {
+      const tMessage =
+          'Server down, wait for some time. Sorry for incovenience!!!';
+      when(() => client.get(any())).thenAnswer(
+        (_) async => http.Response(tMessage, 500),
+      );
+
+      final methodCall = remoteDataSource.getUsers;
+
+      expect(
+        () => methodCall(),
+        throwsA(
+          const APIException(message: tMessage, statusCode: 500),
+        ),
+      );
+
+      verify(() => client.get(Uri.https(kBaseUrl, kGetUsersEndpoint)))
+          .called(1);
 
       verifyNoMoreInteractions(client);
     });
