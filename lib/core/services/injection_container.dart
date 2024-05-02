@@ -30,5 +30,5 @@ Future<void> init() async {
         () => AuthRemoteDataSrcImpl(sl()))
 
     //external dependencies
-    ..registerLazySingleton(() => http.Client.new);
+    ..registerLazySingleton(() => http.Client());
 }

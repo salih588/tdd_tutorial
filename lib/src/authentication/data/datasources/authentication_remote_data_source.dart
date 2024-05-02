@@ -34,8 +34,10 @@ class AuthRemoteDataSrcImpl implements AuthenticationRemoteDataSource {
         body: jsonEncode({
           'createdAt': createdAt,
           'name': name,
-          'avatar': avatar,
         }),
+        headers: {
+          'Content-type': 'application/json',
+        }
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
